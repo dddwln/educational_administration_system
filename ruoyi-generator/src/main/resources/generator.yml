@@ -1,0 +1,13 @@
+
+# 代码生成
+gen:
+  # 作者
+  author: ruoyi
+  # 生成包路径：学管平台业务模块
+  packageName: com.ruoyi.xueguan
+  # 自动去除表前缀（生成类名不会包含表前缀）
+  autoRemovePre: true
+  # 业务表前缀（多个用逗号分隔）
+  tablePrefix: xg_
+  # 是否允许生成文件覆盖到本地（自定义路径），默认不允许
+  allowOverwrite: false

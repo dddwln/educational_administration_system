@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.xueguan.mapper.MaterialMapper">
+    
+    <resultMap type="Material" id="MaterialResult">
+        <result property="id"    column="id"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="materialType"    column="material_type"    />
+        <result property="title"    column="title"    />
+        <result property="materialFile"    column="material_file"    />
+        <result property="version"    column="version"    />
+        <result property="uploaderId"    column="uploader_id"    />
+        <result property="uploadTime"    column="upload_time"    />
+        <result property="auditStatus"    column="audit_status"    />
+        <result property="auditComment"    column="audit_comment"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectMaterialVo">
+        select id, project_id, material_type, title, material_file, version, uploader_id, upload_time, audit_status, audit_comment, del_flag, create_by, create_time, update_by, update_time, remark from xg_material
+    </sql>
+
+    <select id="selectMaterialList" parameterType="Material" resultMap="MaterialResult">
+        <include refid="selectMaterialVo"/>
+        <where>  
+            <if test="projectId != null "> and project_id = #{projectId}</if>
+            <if test="materialType != null  and materialType != ''"> and material_type = #{materialType}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="materialFile != null  and materialFile != ''"> and material_file = #{materialFile}</if>
+            <if test="version != null  and version != ''"> and version = #{version}</if>
+            <if test="uploaderId != null "> and uploader_id = #{uploaderId}</if>
+            <if test="uploadTime != null "> and upload_time = #{uploadTime}</if>
+            <if test="auditStatus != null  and auditStatus != ''"> and audit_status = #{auditStatus}</if>
+            <if test="auditComment != null  and auditComment != ''"> and audit_comment = #{auditComment}</if>
+        </where>
+    </select>
+    
+    <select id="selectMaterialById" parameterType="Long" resultMap="MaterialResult">
+        <include refid="selectMaterialVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMaterial" parameterType="Material" useGeneratedKeys="true" keyProperty="id">
+        insert into xg_material
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">project_id,</if>
+            <if test="materialType != null and materialType != ''">material_type,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="materialFile != null and materialFile != ''">material_file,</if>
+            <if test="version != null and version != ''">version,</if>
+            <if test="uploaderId != null">uploader_id,</if>
+            <if test="uploadTime != null">upload_time,</if>
+            <if test="auditStatus != null and auditStatus != ''">audit_status,</if>
+            <if test="auditComment != null">audit_comment,</if>
+            <if test="delFlag != null and delFlag != ''">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">#{projectId},</if>
+            <if test="materialType != null and materialType != ''">#{materialType},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="materialFile != null and materialFile != ''">#{materialFile},</if>
+            <if test="version != null and version != ''">#{version},</if>
+            <if test="uploaderId != null">#{uploaderId},</if>
+            <if test="uploadTime != null">#{uploadTime},</if>
+            <if test="auditStatus != null and auditStatus != ''">#{auditStatus},</if>
+            <if test="auditComment != null">#{auditComment},</if>
+            <if test="delFlag != null and delFlag != ''">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMaterial" parameterType="Material">
+        update xg_material
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="materialType != null and materialType != ''">material_type = #{materialType},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="materialFile != null and materialFile != ''">material_file = #{materialFile},</if>
+            <if test="version != null and version != ''">version = #{version},</if>
+            <if test="uploaderId != null">uploader_id = #{uploaderId},</if>
+            <if test="uploadTime != null">upload_time = #{uploadTime},</if>
+            <if test="auditStatus != null and auditStatus != ''">audit_status = #{auditStatus},</if>
+            <if test="auditComment != null">audit_comment = #{auditComment},</if>
+            <if test="delFlag != null and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMaterialById" parameterType="Long">
+        delete from xg_material where id = #{id}
+    </delete>
+
+    <delete id="deleteMaterialByIds" parameterType="String">
+        delete from xg_material where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
