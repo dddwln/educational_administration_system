@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.XgMaterialMapper">
+
+    <resultMap type="com.ruoyi.system.domain.xg.XgMaterial" id="XgMaterialResult">
+        <id property="materialId" column="material_id"/>
+        <result property="ownerUserId" column="owner_user_id"/>
+        <result property="ownerRole" column="owner_role"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="materialCategory" column="material_category"/>
+        <result property="materialType" column="material_type"/>
+        <result property="title" column="title"/>
+        <result property="projectNo" column="project_no"/>
+        <result property="relatedBizId" column="related_biz_id"/>
+        <result property="materialData" column="material_data"/>
+        <result property="amount" column="amount"/>
+        <result property="materialDate" column="material_date"/>
+        <result property="fileUrl" column="file_url"/>
+        <result property="fileName" column="file_name"/>
+        <result property="originalFilename" column="original_filename"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="auditBy" column="audit_by"/>
+        <result property="auditTime" column="audit_time"/>
+        <result property="rejectReason" column="reject_reason"/>
+        <result property="remarks" column="remarks"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectXgMaterialVo">
+        select material_id, owner_user_id, owner_role, dept_id, material_category, material_type,
+               title, project_no, related_biz_id, material_data, amount, material_date, file_url, file_name, original_filename,
+               audit_status, audit_by, audit_time, reject_reason, remarks,
+               create_by, create_time, update_by, update_time
+        from xg_material
+    </sql>
+
+    <select id="selectXgMaterialList" parameterType="com.ruoyi.system.domain.xg.XgMaterial" resultMap="XgMaterialResult">
+        <include refid="selectXgMaterialVo"/>
+        <where>
+            <if test="ownerUserId != null">and owner_user_id = #{ownerUserId}</if>
+            <if test="ownerRole != null and ownerRole != ''">and owner_role = #{ownerRole}</if>
+            <if test="deptId != null">and dept_id = #{deptId}</if>
+            <if test="materialCategory != null and materialCategory != ''">and material_category = #{materialCategory}</if>
+            <if test="materialType != null and materialType != ''">and material_type = #{materialType}</if>
+            <if test="title != null and title != ''">and title like concat('%', #{title}, '%')</if>
+            <if test="auditStatus != null and auditStatus != ''">and audit_status = #{auditStatus}</if>
+            <if test="params.beginTime != null and params.beginTime != ''">and create_time &gt;= #{params.beginTime}</if>
+            <if test="params.endTime != null and params.endTime != ''">and create_time &lt;= #{params.endTime}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectXgMaterialById" parameterType="Long" resultMap="XgMaterialResult">
+        <include refid="selectXgMaterialVo"/>
+        where material_id = #{materialId}
+    </select>
+
+    <insert id="insertXgMaterial" parameterType="com.ruoyi.system.domain.xg.XgMaterial" useGeneratedKeys="true" keyProperty="materialId">
+        insert into xg_material(owner_user_id, owner_role, dept_id, material_category, material_type,
+            title, project_no, related_biz_id, material_data, amount, material_date, file_url, file_name, original_filename, audit_status,
+            remarks, create_by, create_time)
+        values(#{ownerUserId}, #{ownerRole}, #{deptId}, #{materialCategory}, #{materialType},
+            #{title}, #{projectNo}, #{relatedBizId}, #{materialData}, #{amount}, #{materialDate}, #{fileUrl}, #{fileName}, #{originalFilename},
+            #{auditStatus}, #{remarks}, #{createBy}, #{createTime})
+    </insert>
+
+    <update id="updateXgMaterial" parameterType="com.ruoyi.system.domain.xg.XgMaterial">
+        update xg_material
+        <set>
+            <if test="materialCategory != null">material_category = #{materialCategory},</if>
+            <if test="materialType != null">material_type = #{materialType},</if>
+            <if test="title != null">title = #{title},</if>
+            project_no = #{projectNo},
+            material_data = #{materialData},
+            amount = #{amount},
+            material_date = #{materialDate},
+            <if test="fileUrl != null">file_url = #{fileUrl},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="originalFilename != null">original_filename = #{originalFilename},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+            update_by = #{updateBy},
+            update_time = #{updateTime}
+        </set>
+        where material_id = #{materialId}
+    </update>
+
+    <delete id="deleteXgMaterialByIds" parameterType="Long">
+        delete from xg_material where material_id in
+        <foreach item="materialId" collection="array" open="(" separator="," close=")">
+            #{materialId}
+        </foreach>
+    </delete>
+
+    <update id="auditMaterial">
+        update xg_material
+        set audit_status = #{auditStatus},
+            audit_by = #{auditBy},
+            audit_time = sysdate(),
+            reject_reason = #{rejectReason},
+            update_by = #{auditBy},
+            update_time = sysdate()
+        where material_id = #{materialId}
+    </update>
+
+    <insert id="insertAuditRecord">
+        insert into xg_audit_record(material_id, audit_action, audit_status, audit_opinion, audit_by, audit_time)
+        values(#{materialId}, #{auditAction}, #{auditStatus}, #{auditOpinion}, #{auditBy}, sysdate())
+    </insert>
+
+    <sql id="dashboardWhere">
+        <where>
+            <if test="deptId != null">and dept_id = #{deptId}</if>
+            <if test="ownerRole != null and ownerRole != ''">and owner_role = #{ownerRole}</if>
+            <if test="beginTime != null and beginTime != ''">and create_time &gt;= #{beginTime}</if>
+            <if test="endTime != null and endTime != ''">and create_time &lt;= #{endTime}</if>
+        </where>
+    </sql>
+
+    <select id="selectDashboardSummary" parameterType="map" resultType="map">
+        select count(*) materialCount,
+               sum(case when audit_status = '0' then 1 else 0 end) pendingCount,
+               sum(case when audit_status = '1' then 1 else 0 end) approvedCount,
+               sum(case when owner_role = 'teacher' then 1 else 0 end) teacherUploadCount,
+               sum(case when owner_role = 'student' then 1 else 0 end) studentUploadCount,
+               sum(ifnull(amount, 0)) totalAmount
+        from xg_material
+        <include refid="dashboardWhere"/>
+    </select>
+
+    <select id="selectCategoryStats" parameterType="map" resultType="map">
+        select material_category name, count(*) value
+        from xg_material
+        <include refid="dashboardWhere"/>
+        group by material_category
+    </select>
+
+    <select id="selectAuditStatusStats" parameterType="map" resultType="map">
+        select case audit_status when '0' then '待审核' when '1' then '已通过' when '2' then '已驳回' else '草稿' end name,
+               count(*) value
+        from xg_material
+        <include refid="dashboardWhere"/>
+        group by audit_status
+    </select>
+
+    <select id="selectTrendStats" parameterType="map" resultType="map">
+        select date_format(create_time, '%Y-%m') name, count(*) value
+        from xg_material
+        <include refid="dashboardWhere"/>
+        group by date_format(create_time, '%Y-%m')
+        order by name
+    </select>
+
+    <select id="selectDeptStats" parameterType="map" resultType="map">
+        select ifnull(d.dept_name, '未归属') name, count(m.material_id) value
+        from xg_material m
+        left join sys_dept d on d.dept_id = m.dept_id
+        <where>
+            <if test="deptId != null">and m.dept_id = #{deptId}</if>
+            <if test="ownerRole != null and ownerRole != ''">and m.owner_role = #{ownerRole}</if>
+            <if test="beginTime != null and beginTime != ''">and m.create_time &gt;= #{beginTime}</if>
+            <if test="endTime != null and endTime != ''">and m.create_time &lt;= #{endTime}</if>
+        </where>
+        group by d.dept_name
+        order by value desc
+    </select>
+
+</mapper>
